@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Security
+
+- Strict Content Security Policy for the UI: scripts are allowed only by hash, no network access, no remote content
+- Internal helpers are no longer callable from the UI; every exposed API call validates its input
+- Image uploads from the UI must be PNG data and are size-limited
+- Image files are limited to 64 MB and 64 megapixels, with decompression bomb protection
+- Library entries are validated by name, so paths outside the library cannot be read or deleted
+- Settings are filtered to known keys and types before being saved
+- Settings and library are stored with owner-only permissions (directories `0700`, files `0600`), written atomically without following symlinks
+- The device node is verified as the D6's hidraw character device before it is opened, with `O_CLOEXEC` and `O_NOFOLLOW`
+- The web view runs in private mode with developer tools disabled
+- External commands for wallpaper detection run without a shell, with a timeout and no stdin
+
 ## [0.2.0] - 2026-11-14
 
 Initial public release.

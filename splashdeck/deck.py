@@ -1,4 +1,4 @@
-import fcntl, glob, io, os, select, time
+import fcntl, glob, io, os, select, stat, time
 
 from PIL import Image, ImageEnhance, ImageFilter, ImageOps
 
@@ -11,6 +11,35 @@ class DeckError(Exception):
     pass
 
 
+def isDeck(path):
+    name = os.path.basename(path or "")
+    if not name.startswith("hidraw") or not name[6:].isdigit() or path != "/dev/" + name:
+        return False
+    node = os.path.join("/sys/class/hidraw", name)
+    try:
+        uevent = open(os.path.join(node, "device/uevent")).read()
+        rdesc = open(os.path.join(node, "device/report_descriptor"), "rb").read()
+    except OSError:
+        return False
+    return f"HID_ID=0003:{vendorId:08X}:{productId:08X}" in uevent and rdesc[:3] == b"\x06\xa0\xff"
+
+
+def openDeck(path=None):
+    path = path or findDeck()
+    if not path or not isDeck(path):
+        raise DeckError("no deck")
+    try:
+        fd = os.open(path, os.O_RDWR | os.O_CLOEXEC | os.O_NOFOLLOW)
+    except PermissionError:
+        raise DeckError("no access")
+    except OSError:
+        raise DeckError("no deck")
+    if not stat.S_ISCHR(os.fstat(fd).st_mode):
+        os.close(fd)
+        raise DeckError("no deck")
+    return fd
+
+
 def findDeck():
     for node in sorted(glob.glob("/sys/class/hidraw/hidraw*")):
         try:
@@ -19,9 +48,9 @@ def findDeck():
             continue
         if f"HID_ID=0003:{vendorId:08X}:{productId:08X}" not in uevent:
             continue
-        rdesc = open(os.path.join(node, "device/report_descriptor"), "rb").read()
-        if rdesc[:3] == b"\x06\xa0\xff":
-            return "/dev/" + os.path.basename(node)
+        path = "/dev/" + os.path.basename(node)
+        if isDeck(path):
+            return path
     return None
 
 
@@ -63,10 +92,7 @@ def readAck(fd, timeout):
 
 
 def setBrightness(value, path=None):
-    path = path or findDeck()
-    if not path:
-        raise DeckError("no deck")
-    fd = os.open(path, os.O_RDWR)
+    fd = openDeck(path)
     try:
         os.write(fd, pad(command(b"LIG", b"\x00\x00" + bytes([max(0, min(100, int(value)))]))))
     finally:
@@ -81,14 +107,8 @@ def showLogo(fd):
 
 
 def sendLogo(img, path=None, progress=None, show=True):
-    path = path or findDeck()
-    if not path:
-        raise DeckError("no deck")
     jpeg = encode(img)
-    try:
-        fd = os.open(path, os.O_RDWR)
-    except PermissionError:
-        raise DeckError("no access")
+    fd = openDeck(path)
     try:
         while readAck(fd, 0):
             pass
@@ -112,13 +132,7 @@ def sendLogo(img, path=None, progress=None, show=True):
 
 
 def run(path, *commands):
-    path = path or findDeck()
-    if not path:
-        raise DeckError("no deck")
-    try:
-        fd = os.open(path, os.O_RDWR)
-    except PermissionError:
-        raise DeckError("no access")
+    fd = openDeck(path)
     try:
         for name, extra in commands:
             os.write(fd, pad(command(name, extra)))
@@ -135,10 +149,7 @@ def wakeScreen(path=None):
 
 
 def showLogoNow(path=None):
-    path = path or findDeck()
-    if not path:
-        raise DeckError("no deck")
-    fd = os.open(path, os.O_RDWR)
+    fd = openDeck(path)
     try:
         showLogo(fd)
     finally:
@@ -147,8 +158,8 @@ def showLogoNow(path=None):
 
 def firmware(path):
     try:
-        fd = os.open(path, os.O_RDWR)
-    except OSError:
+        fd = openDeck(path)
+    except DeckError:
         return None
     try:
         buf = bytearray(512)
@@ -163,7 +174,7 @@ def firmware(path):
 
 def deviceInfo(path=None):
     path = path or findDeck()
-    if not path:
+    if not path or not isDeck(path):
         return None
     usb = os.path.realpath(os.path.join("/sys/class/hidraw", os.path.basename(path), "device", "..", ".."))
 

@@ -18,7 +18,7 @@ sudo udevadm trigger
 
 Then reconnect the device. On NixOS, use the module from the flake, or add the rule to `services.udev.extraRules`.
 
-The rule uses `TAG+="uaccess"`, which grants access to the user of the active local session. If you log in without a session manager that registers seats (for example a bare TTY login starting a compositor), replace it with `MODE="0666"`.
+The rule uses `TAG+="uaccess"`, which grants access to the user of the active local session. If you log in without a session manager that registers seats (for example a bare TTY login starting a compositor), replace `TAG+="uaccess"` with `OWNER="youruser", MODE="0600"`. Avoid `MODE="0666"`, which lets every local account control the device.
 
 ## The app says "No reply"
 

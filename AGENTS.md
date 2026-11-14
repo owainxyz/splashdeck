@@ -52,6 +52,15 @@ Read [`docs/PROTOCOL.md`](docs/PROTOCOL.md) before touching `deck.py`.
 
 - Long operations must not block the JS promise. `Api.send` starts a worker thread and returns `{"started": true}`; progress and completion are pushed with `window.evaluate_js` to `window.onSendProgress` and `window.onSendDone`.
 - Data crosses the bridge as data URLs. Keep payloads to a single image.
+- Every public method on `Api` is callable from JavaScript. Prefix internal helpers with `_` so pywebview does not expose them, and validate every argument of public methods.
+
+## Security rules
+
+- Keep the Content Security Policy in `page()` strict. Do not add `unsafe-inline` to `script-src`, inline event handler attributes, or any network source.
+- Render untrusted strings with `textContent`, never `innerHTML`.
+- Open images through `openImage()` so size and pixel limits apply.
+- Write user data with `writePrivate()` and create directories with `privateDir()`.
+- Open the device only through `deck.openDeck()`.
 
 ## Before finishing a change
 

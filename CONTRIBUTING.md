@@ -58,6 +58,7 @@ The UI renders the final 800 × 480 image in a canvas and hands a PNG to Python,
 - No new runtime dependencies without discussion
 - UI text is short and functional: labels and one or two word status messages, no explanatory copy
 - The UI is monochrome (black and greys); do not introduce accent colours
+- Follow the security rules in [AGENTS.md](AGENTS.md#security-rules): keep the CSP strict, validate bridge input, use the provided helpers for files and the device
 
 ## Testing
 

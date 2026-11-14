@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "splashdeck"
+version = "0.2.0"
+description = "Splash screen, brightness and screen control for the fifine AmpliGame D6"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["pillow", "PyGObject", "pywebview"]
+
+[project.scripts]
+splashdeck = "splashdeck.app:main"
+
+[tool.setuptools]
+packages = ["splashdeck"]
+
+[tool.setuptools.package-data]
+splashdeck = ["web/*"]

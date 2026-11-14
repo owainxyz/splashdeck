@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=splashdeck
+Comment=Splash screen and display control for the fifine D6
+Exec=splashdeck %f
+Icon=splashdeck
+Terminal=false
+Categories=Utility;Settings;HardwareSettings;
+MimeType=image/png;image/jpeg;image/webp;image/bmp;

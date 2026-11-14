@@ -1,0 +1,38 @@
+name: Device report
+description: Report how splashdeck works with a specific deck
+labels: [device]
+body:
+  - type: input
+    id: model
+    attributes:
+      label: Device model
+      placeholder: fifine AmpliGame D6 PRO
+    validations:
+      required: true
+  - type: input
+    id: usbid
+    attributes:
+      label: USB ID
+      description: From `lsusb`.
+      placeholder: "3142:0060"
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version
+  - type: dropdown
+    id: works
+    attributes:
+      label: Splash screen upload
+      options:
+        - Works
+        - Works with issues
+        - Does not work
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Screen resolution, orientation problems, anything else.

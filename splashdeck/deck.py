@@ -102,8 +102,6 @@ def setBrightness(value, path=None):
 def showLogo(fd):
     os.write(fd, pad(command(b"DIS")))
     os.write(fd, pad(command(b"CLE", b"\x00\x00DC")))
-    time.sleep(0.5)
-    os.write(fd, pad(command(b"DIS")))
 
 
 def sendLogo(img, path=None, progress=None, show=True):

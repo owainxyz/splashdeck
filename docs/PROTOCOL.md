@@ -53,7 +53,6 @@ After the upload the device keeps showing whatever it showed before. To switch t
 |------|-----------------------|-----------------------------------|
 | 1    | `CRT\0\0DIS`          | Wake the screen                   |
 | 2    | `CRT\0\0CLE\0\0DC`    | Clear and return to standby image |
-| 3    | `CRT\0\0DIS`          | Keep the screen awake             |
 
 ## Display
 

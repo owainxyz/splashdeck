@@ -115,7 +115,7 @@ Tested on a D6 PRO running firmware `V3.D6.1.009`.
 
 ## Contributing
 
-Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request, and see [AGENTS.md](AGENTS.md) if you use a coding agent. Security issues should be reported as described in [SECURITY.md](SECURITY.md).
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Security issues should be reported as described in [SECURITY.md](SECURITY.md).
 
 This project follows a [Code of Conduct](CODE_OF_CONDUCT.md).
 
